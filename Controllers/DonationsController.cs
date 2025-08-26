@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BarterSystem_2024_back_up_.Data;
+using BarterSystem_2024_back_up_.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BarterSystem_2024_back_up_.Data;
-using BarterSystem_2024_back_up_.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BarterSystem_2024_back_up_.Controllers
 {
@@ -20,6 +21,7 @@ namespace BarterSystem_2024_back_up_.Controllers
         }
 
         // GET: Donations
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Donation.ToListAsync());
@@ -44,6 +46,7 @@ namespace BarterSystem_2024_back_up_.Controllers
         }
 
         // GET: Donations/Create
+        [AllowAnonymous]
         public IActionResult Create()
         {
             return View();

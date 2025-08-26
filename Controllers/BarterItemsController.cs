@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BarterSystem_2024_back_up_.Data;
 using BarterSystem_2024_back_up_.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace BarterSystem_2024_back_up_.Controllers
 {
+    [Authorize]
     public class BarterItemsController : Controller
     {
         private readonly BarterSystem_2024_back_up_Context _context;
@@ -46,6 +49,8 @@ namespace BarterSystem_2024_back_up_.Controllers
         }
 
         // GET: BarterItems/Create
+        // Users & Admins can create
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Create()
         {
             ViewData["OwnerId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id");
@@ -159,6 +164,14 @@ namespace BarterSystem_2024_back_up_.Controllers
         private bool BarterItemExists(int id)
         {
             return _context.BarterItems.Any(e => e.Id == id);
+        }
+
+        // Only Admin can approve
+        [Authorize(Roles = "Admin")]
+        public IActionResult Approve(int id)
+        {
+            // find item and mark approved
+            return RedirectToAction(nameof(Index));
         }
     }
 }

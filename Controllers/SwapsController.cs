@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BarterSystem_2024_back_up_.Data;
+using BarterSystem_2024_back_up_.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BarterSystem_2024_back_up_.Data;
-using BarterSystem_2024_back_up_.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BarterSystem_2024_back_up_.Controllers
 {
@@ -47,6 +48,7 @@ namespace BarterSystem_2024_back_up_.Controllers
         }
 
         // GET: Swaps/Create
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Create()
         {
             ViewData["OfferedItemId"] = new SelectList(_context.BarterItems, "Id", "Title");
@@ -166,5 +168,30 @@ namespace BarterSystem_2024_back_up_.Controllers
         {
             return _context.Swaps.Any(e => e.Id == id);
         }
+
+        [Authorize(Roles = "User,Admin")]
+        public IActionResult Accept(int id)
+        {
+            var swap = _context.Swaps.Find(id);
+            if (swap != null)
+            {
+                swap.Status = "Accepted";
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "User,Admin")]
+        public IActionResult Decline(int id)
+        {
+            var swap = _context.Swaps.Find(id);
+            if (swap != null)
+            {
+                swap.Status = "Declined";
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
     }
 }
