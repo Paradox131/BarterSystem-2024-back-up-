@@ -2,7 +2,7 @@
 
 namespace BarterSystem_2024_back_up_.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class User : IdentityUser
     {
         public string Name { get; set; }
 

@@ -6,14 +6,21 @@ using BarterSystem_2024_back_up_.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<BarterSystem_2024_back_up_Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BarterSystem_2024_back_up_Context") ?? throw new InvalidOperationException("Connection string 'BarterSystem_2024_back_up_Context' not found.")));
+builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddIdentity<User,IdentityRole>(options =>
+{
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+    options.SignIn.RequireConfirmedEmail = false;
 
-// Identity setup
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-    options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<BarterSystem_2024_back_up_Context>();
+})
+    .AddEntityFrameworkStores<AppDBContext>()
+    .AddDefaultTokenProviders();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -76,5 +83,11 @@ async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
             await userManager.AddToRoleAsync(newAdmin, "Admin");
         }
     }
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRolesAndAdminAsync(services);
 }
 app.Run();
